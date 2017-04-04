@@ -6,8 +6,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-
-amount_images = 3
+from tkinter.filedialog import *
 
 def load_data(data_dir):
     directories = [d for d in os.listdir(data_dir) 
@@ -28,7 +27,6 @@ def display_images_and_labels(images, labels):
     plt.figure(figsize=(15, 15))
     i = 1
     for label in unique_labels:
-        # Pick the first image for each label.
         image = images[labels.index(label)]
         plt.subplot(8, 8, i)  # A grid of 8 rows x 8 columns
         plt.axis('off')
@@ -44,10 +42,14 @@ str_labels = {
     2: 'stop',
 }
 
+print('Select folder with training images')
+train_data_dir = askdirectory()
+print('Training diractory:', train_data_dir)
+
 # -------------
 # Todo: Select path with dialog window
 ROOT_PATH = "/home/lena/Desktop/course_work/images"
-train_data_dir = os.path.join(ROOT_PATH, "training")
+# train_data_dir = os.path.join(ROOT_PATH, "training")
 test_data_dir = os.path.join(ROOT_PATH, "testing")
 
 # ROOT_PATH = "/home/lena/Desktop/course_work/traffic"
@@ -55,6 +57,7 @@ test_data_dir = os.path.join(ROOT_PATH, "testing")
 # test_data_dir = os.path.join(ROOT_PATH, "datasets/BelgiumTS/Testing")
 
 images, labels = load_data(train_data_dir)
+amount_images = set(labels)
 
 # -------------
 # Resize images
