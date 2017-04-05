@@ -42,14 +42,14 @@ str_labels = {
     2: 'stop',
 }
 
-print('Select folder with training images')
-train_data_dir = askdirectory()
-print('Training diractory:', train_data_dir)
+# print('Select folder with training images')
+# train_data_dir = askdirectory()
+# print('Training diractory:', train_data_dir)
 
 # -------------
 # Todo: Select path with dialog window
 ROOT_PATH = "/home/lena/Desktop/course_work/images"
-# train_data_dir = os.path.join(ROOT_PATH, "training")
+train_data_dir = os.path.join(ROOT_PATH, "training")
 test_data_dir = os.path.join(ROOT_PATH, "testing")
 
 # ROOT_PATH = "/home/lena/Desktop/course_work/traffic"
@@ -57,7 +57,7 @@ test_data_dir = os.path.join(ROOT_PATH, "testing")
 # test_data_dir = os.path.join(ROOT_PATH, "datasets/BelgiumTS/Testing")
 
 images, labels = load_data(train_data_dir)
-amount_images = set(labels)
+amount_images = len(set(labels))
 
 # -------------
 # Resize images
@@ -89,46 +89,46 @@ for i in range(200):
     _, loss_value = session.run([train, loss], 
                                 feed_dict={images_ph: images_a, labels_ph: labels_a})
 
-# while (True): 
-#     sample_indexes = random.sample(range(len(images32)), 1)
-#     print('sample_indexes = ', sample_indexes)
+while (True): 
+    sample_indexes = random.sample(range(len(images32)), 1)
+    print('sample_indexes = ', sample_indexes)
 
-#     sample_images = [images32[i] for i in sample_indexes]
-#     sample_labels = [labels[i] for i in sample_indexes]
+    sample_images = [images32[i] for i in sample_indexes]
+    sample_labels = [labels[i] for i in sample_indexes]
 
-#     predicted = session.run([predicted_labels], 
-#                             feed_dict={images_ph: sample_images})[0]
-#     print(sample_labels)
-#     print(predicted)
+    predicted = session.run([predicted_labels], 
+                            feed_dict={images_ph: sample_images})[0]
+    print(sample_labels)
+    print(predicted)
 
-#     predicted = session.run([predicted_labels], feed_dict={images_ph: sample_images})[0]
+    predicted = session.run([predicted_labels], feed_dict={images_ph: sample_images})[0]
     
-#     fig = plt.figure(figsize=(10, 10))
-#     for i in range(len(sample_images)):
-#         print('i = ', i)
-#         truth = sample_labels[i]
-#         print('truth = ', truth)
-#         prediction = predicted[i]
-#         print('prediction = ', prediction)
+    fig = plt.figure(figsize=(10, 10))
+    for i in range(len(sample_images)):
+        print('i = ', i)
+        truth = sample_labels[i]
+        print('truth = ', truth)
+        prediction = predicted[i]
+        print('prediction = ', prediction)
 
-#         plt.subplot(1, 2, i + 1)
-#         plt.axis('off')
+        plt.subplot(1, 2, i + 1)
+        plt.axis('off')
 
-#         color='green' if truth == prediction else 'red'
-#         plt.text(40, 10, 'Prediction: {0}'.format(str_labels[prediction]), 
-#                  fontsize=12, color=color)
+        color='green' if truth == prediction else 'red'
+        plt.text(40, 10, 'Prediction: {0}'.format(str_labels[prediction]), 
+                 fontsize=12, color=color)
 
-#         plt.imshow(sample_images[i])
+        plt.imshow(sample_images[i])
 
-#         # plt.subplot(1, 2, i + 2)
-#         # plt.axis('off')
-#         # plt.imshow(images32[sample_indexes[i]])
+        # plt.subplot(1, 2, i + 2)
+        # plt.axis('off')
+        # plt.imshow(images32[sample_indexes[i]])
 
-#     plt.show()
+    plt.show()
 
-#     inp = input("Next?\n")
-#     if inp != "yes":
-#         break
+    inp = input("Next?\n")
+    if inp != "yes":
+        break
 
 # ---------
 # Test data
@@ -145,10 +145,6 @@ for i in range(len(predicted)):
     plt.text(40, 10, "Prediction: {0}".format(str_labels[predicted[i]]), 
                  fontsize=12, color='black')
     plt.imshow(test_images[i])
-
-    # plt.subplot(1, 2, i + 2)
-    # plt.axis('off')
-    # plt.imshow(images32[sample_indexes[i]])
 plt.show()
 
 session.close()
