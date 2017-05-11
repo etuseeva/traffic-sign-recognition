@@ -113,6 +113,10 @@ labels_a = np.array(labels)
 print('Создание графа.')
 graph = tf.Graph()
 
+print('Введите параметры обучения:')
+learning_rate = float(input("Скорость обучения (learning rate): "))
+learning_steps = int(input("Количество итераций обучения: "))
+
 with graph.as_default():
     images_ph = tf.placeholder(tf.float32, [None, 32, 32, 3])
     labels_ph = tf.placeholder(tf.int32, [None])
@@ -131,7 +135,7 @@ _ = session.run([init])
 print('Создание сессии.')
 start_time = time.time()
 print('Производится обучение...')
-for i in range(200):
+for i in range(learning_steps):
     _, loss_value = session.run([train, loss],
                                 feed_dict={images_ph: images_a, labels_ph: labels_a})
 print('Обучение завершено за ', time.time() - start_time, ' милисекунд')
