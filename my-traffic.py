@@ -1,9 +1,7 @@
 import os
 import time
-import random
 import skimage.data
 import skimage.transform
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
