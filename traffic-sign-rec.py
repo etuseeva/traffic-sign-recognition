@@ -2,9 +2,10 @@ import os
 import time
 import skimage.data
 import skimage.transform
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-from tkinter.filedialog import *
 
 def load_data(data_dir):
     directories = [d for d in os.listdir(data_dir)
@@ -18,28 +19,24 @@ def load_data(data_dir):
         label_dir = os.path.join(data_dir, d)
         file_names = [os.path.join(label_dir, f)
                       for f in os.listdir(label_dir)]
-        # for f in os.listdir(label_dir) if f.endswith(".ppm")]
+        			# for f in os.listdir(label_dir) if f.endswith(".ppm")]
         labels_str[i] = d
         for f in file_names:
             images.append(skimage.data.imread(f))
             labels.append(i)
-
         i = i + 1
     return images, labels, labels_str
 
 def test_data(labels_str):
-    print('Выберите директорию, в которой хранятся данные для тестирования')
-    # test_data_dir = '/home/lena/Desktop/traffic-sign-recognition/images/testing'
-    test_data_dir = askdirectory()
+    print('Введите директорию, в которой хранятся данные для тестирования')
+    print('/home/lena/Desktop/traffic-sign-recognition/Знаки ПДД/Тестовые данные')
+    test_data_dir = '/home/lena/Desktop/traffic-sign-recognition/Знаки ПДД/Тестовые данные'
+    # test_data_dir = input("директория: ")
     print('Выбранная директория:', test_data_dir)
 
     print('Загрузка тестовый изображений...')
     start_time = time.time()
-    try:
-        test_images, test_labels, test_labels_str = load_data(test_data_dir)
-    except Error:
-        print('Ошибка в момент загрузки данных.')
-        return
+    test_images, test_labels, test_labels_str = load_data(test_data_dir)
     print('Загрузка изображений была успешно завершена за ', time.time() - start_time, ' милисекунд')
 
     start_time = time.time()
@@ -51,7 +48,7 @@ def test_data(labels_str):
     print('Сжатие изображений завершено за ', time.time() - start_time, ' милисекунд')
 
     # for i in predicted:
-    # print(labels_str[i])
+    # 	print(labels_str[i])
 
     print('Проверка правдивости распознавателя:')
     sum = 0
@@ -62,9 +59,13 @@ def test_data(labels_str):
     print('Правдивость равна = ', (sum / len(test_labels)) * 100, '%')
 
 def run_on_image(labels_str):
-    print('Выберите изображение которое хотите распознать: ')
-    image_path = askopenfilename()
-    print('Путь до изображения:', image_path)
+    print('Введите путь изображение которое хотите распознать: ')
+    try:
+    	image_path = input("Путь до изображения: ")
+    except Exception as e:
+    	print('Error')
+    	return
+    # print('Путь до изображения:', image_path)
 
     test_images = []
     test_images.append(skimage.data.imread(image_path))
@@ -75,28 +76,30 @@ def run_on_image(labels_str):
                             feed_dict={images_ph: test_images32})[0]
 
     # for i in predicted:
-    #     print(labels_str[i])
+    #     print(labels_str[i]) labels_str[predicted[i]]
 
     for i in range(len(predicted)):
         plt.subplot(1, 1, i + 1)
-        plt.text(0, -5, "It's - {0}".format(labels_str[predicted[i]]),
-                 fontsize=12, color='black')
+        print(labels_str[predicted[i]])
+        plt.text(0, -5, labels_str[predicted[i]], fontsize=18, color='black')
         plt.imshow(test_images[i])
         plt.axis('off')
     plt.show()
 
-print('Выберите директорию, в которой хранятся тренировочные изображения.')
-# train_data_dir = '/home/lena/Desktop/traffic-sign-recognition/images/training'
-train_data_dir = askdirectory()
+mpl.rcParams['font.family'] = 'fantasy'
+mpl.rcParams['font.fantasy'] = 'Arial' # Для Windows
+mpl.rcParams['font.fantasy'] = 'Ubuntu' # Для Ubuntu
+mpl.rcParams['font.fantasy'] = 'Arial, Ubuntu'
+
+print('Введите директорию, в которой хранятся тренировочные изображения.')
+print('/home/lena/Desktop/traffic-sign-recognition/Знаки ПДД/Тренировочные данные')
+train_data_dir = '/home/lena/Desktop/traffic-sign-recognition/Знаки ПДД/Тренировочные данные'
+# train_data_dir = input("директория: ")
 print('Выбранная директория: ', train_data_dir)
 
 print('Проводится загрузка предложенных данных...')
 start_time = time.time()
-try:
-    images, labels, labels_str = load_data(train_data_dir)
-except Error:
-    print('Ошибка в момент загрузки данных.')
-    return
+images, labels, labels_str = load_data(train_data_dir)
 print('Загрузка изображений была успешно завершена за ', time.time() - start_time, ' милисекунд')
 print('Всего загружено ', len(images), ' изображений')
 
@@ -118,7 +121,7 @@ learning_rate = float(input("Скорость обучения (learning rate): 
 learning_steps = int(input("Количество итераций обучения: "))
 
 with graph.as_default():
-    images_ph = tf.placeholder(tf.float32, [None, 32, 32, 3])
+    images_ph = tf.placeholder(tf.float32, [None, 32, 32, 4])
     labels_ph = tf.placeholder(tf.int32, [None])
 
     images_flat = tf.contrib.layers.flatten(images_ph)
@@ -126,7 +129,7 @@ with graph.as_default():
     predicted_labels = tf.argmax(logits, 1)
     loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels_ph,
                                                                          logits=logits))
-    train = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)
+    train = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
     init = tf.global_variables_initializer()
 
 session = tf.Session(graph=graph)
@@ -141,8 +144,8 @@ for i in range(learning_steps):
 print('Обучение завершено за ', time.time() - start_time, ' милисекунд')
 
 while True:
-    print('Что вы хотите сделать? ' +
-          '1: Проверить прадивость распознавателя на тренировочных данных. \n' +
+    print('Что вы хотите сделать? \n' +
+          '1: Проверить правдивость распознавателя на тренировочных данных. \n' +
           '2: Распознать изображения; \n'
           '3: Выход.')
     type = int(input("Введите число: "))
@@ -152,6 +155,7 @@ while True:
     elif type == 2:
         while True:
             run_on_image(labels_str)
+            plt.close()
             ans = input("Продолжить распознавания изображений? y/n ")
             if ans == 'n':
                 break
