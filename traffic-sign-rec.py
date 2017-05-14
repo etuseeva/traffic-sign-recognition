@@ -162,7 +162,6 @@ while True:
                     break
             except Exception:
                 print('Ошибка, проверьте корректность пути')
-                
     elif type == 3:
         break
 
